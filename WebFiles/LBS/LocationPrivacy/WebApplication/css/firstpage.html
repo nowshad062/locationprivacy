@@ -1,0 +1,209 @@
+<html>
+    <head>
+  <title>Admin Portal</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+        <style>
+        #map {
+        height: 47%;
+      }
+            html {
+  background-color: #5D92BA;
+  font-family: "Tenor Sans", sans-serif;
+}
+        </style>
+        <script>
+            var user = "";
+            var date1 = "";
+            var date2 = "";
+            var time1 = "";
+            var time2 = "";
+            var listvalues = new Array();
+            $(document).ready(function(){
+                document.getElementById("map").style.visibility = "hidden";
+                document.getElementById("trace").style.visibility = "hidden";
+                var table = document.getElementById("tableid");
+            while(table.rows.length > 1) {
+  table.deleteRow(1);
+}
+     var obj = $.getJSON("http://localhost/LocationPrivacy/search.php?username="+user+"&stime="+time1+"&etime="+time2+"&sdate="+date1+"&edate="+date2, function(data){
+            $.each(data, function(i, field){
+                if(i=="record"){
+                    var tr;
+                    //listvalues = listvalues.concat('[');
+    for (var ij = 0; ij < field.length; ij++) {
+        tr = $('<tr/>');
+        tr.append("<td id="+"classid"+">" + field[ij].username + "</td>");
+        tr.append("<td>" + field[ij].curlat + "</td>");
+        tr.append("<td>" + field[ij].curlon + "</td>");
+        tr.append("<td>" + field[ij].reqtime + "</td>");
+        $('#tableid').append(tr);   
+        }           
+                }
+                
+            
+                });           
+                
+                   
+            });
+        });
+                
+            var count = 0;            
+        function results(){
+            document.getElementById("map").style.visibility = "hidden";
+            document.getElementById("trace").style.visibility = "visible";
+             user = document.getElementById("username").value;
+             date1 = document.getElementById("date1").value;
+            date2 = document.getElementById("date2").value;
+            if(count==0){
+                var table = document.getElementById("tableid");
+            while(table.rows.length > 1) {
+  table.deleteRow(1);
+}
+     var obj = $.getJSON("http://localhost/LocationPrivacy/search.php?username="+user+"&stime="+time1+"&etime="+time2+"&sdate="+date1+"&edate="+date2, function(data){
+            $.each(data, function(i, field){
+                if(i=="record"){
+                    var tr;
+    for (var ij = 0; ij < field.length; ij++) {
+        tr = $('<tr/>');
+        tr.append("<td id="+"classid"+">" + field[ij].username + "</td>");
+        tr.append("<td>" + field[ij].curlat + "</td>");
+        tr.append("<td>" + field[ij].curlon + "</td>");
+        tr.append("<td>" + field[ij].reqtime + "</td>");
+        $('#tableid').append(tr);
+        
+        
+    }           //count++;   
+                }
+                if(i=="search")
+                    
+                    listvalues = field;
+            });
+        });
+    
+    initMap();
+                
+    //document.write(newArr);
+    }
+    }
+            
+            
+            function initMap() {
+                document.getElementById("map").style.visibility = "hidden";
+                //document.getElementById("trace").style.visibility = "hidden";
+          var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 8,
+          center: listvalues[0],
+          mapTypeId: google.maps.MapTypeId.TERRAIN
+        });
+
+        /*var json=[{lat: 30.0873, lng: -95.9913},
+                  {lat: 30.0873, lng: -95.9913},
+                  {lat: 30.0873, lng: -95.9913},
+                  {lat: 30.0973, lng: -95.9898},
+                  {lat: 30.0987, lng: -95.6193}];
+          */
+          var json = listvalues;
+        var flightPlanCoordinates = json;
+          var flightPath = new google.maps.Polyline({
+          path: flightPlanCoordinates,
+          geodesic: true,
+          strokeColor: '#FF0000',
+          strokeOpacity: 1.0,
+          strokeWeight: 2
+        });
+                for(i=0;i<listvalues.length;i++){
+                var marker = new google.maps.Marker({
+            map: map,
+          position: new google.maps.LatLng(listvalues[i].lat, listvalues[i].lng)
+        });
+}
+
+        flightPath.setMap(map);
+                //document.getElementById("trace").style.visibility = "hidden";
+          
+      }
+            function s(){
+                document.getElementById("map").style.visibility = "visible";
+                document.getElementById("trace").style.visibility = "hidden";
+            }
+            
+            
+        </script>
+</head>
+   <body>
+    
+<div class="container">
+       <div class="jumbotron">
+    <h1>Welcome</h1>
+    </div>
+    <div class="row">
+    <div class="col-md-4">
+        <label class="col-sm-2 control-label">Search</label>
+        <input class="form-control" id="username" type="text" placeholder="Search here">
+        </div>
+        <div class="col-md-4">
+            <div class="col-sm-8">
+        <label class="col-sm-8 control-label">Date filter</label>
+                </div>
+            <div class='col-md-6'>
+        <div class="form-group">
+            <div class='input-group date' id='datetimepicker6'>
+                <input type="date" id="date1"  placeholder="yyyy-mm-dd"/>
+                </div>
+        </div>
+    </div>
+    <div class='col-md-6'>
+        <div class="form-group">
+            <div class='input-group date' id='datetimepicker7'>
+                <input type='text' id="date2" class="form-control" placeholder="yyyy-mm-dd"/>
+                </div>
+        </div>
+    </div>
+            </div>
+        
+        <div align = "center" class="col-md-4">
+            <br>
+        <button onclick="results()" type="button" class="btn btn-primary">Search</button>
+        <button onclick="results(); s();" type="button" class="btn btn-primary" id="trace">Trace on map</button>    
+        </div>
+        
+    </div>
+    <br>
+    
+    <div>    
+    <table class="table table-bordered col-md-12" id="tableid">
+    <thead>
+      
+        <th>Username</th>
+        <th>Lattitude</th>
+        <th>Longitude</th>
+          <th>Request Time</th>
+      
+    </thead>
+        <tr>
+        </tr>
+      
+  </table></div>
+    </div>    
+    
+       <div class="container">
+       <div id="map">
+    </div>
+    </div>
+    <script>
+
+      // This example creates a 2-pixel-wide red polyline showing the path of William
+      // Kingsford Smith's first trans-Pacific flight between Oakland, CA, and
+      // Brisbane, Australia.
+
+      
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCFLGY58ZN5ESpLddviG9o_9TMjkLbWiis&callback=initMap">
+    </script>
+</body>
+</html>

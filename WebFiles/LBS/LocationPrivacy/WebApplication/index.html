@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html >
+  <head>
+    <meta charset="UTF-8">
+    <title>Admin - Location Privacy</title>
+    
+    
+    <link rel="stylesheet" href="css/reset.css">
+
+    
+        <link rel="stylesheet" href="css/style.css">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+<script>
+      $(document).ready(function(){
+$("#login").click(function(){
+    var email = $("#email").val();
+var password = $("#password").val();
+    
+        
+                    if(email=='lina'&&password=='lina'){
+                       window.location.href = "https://localhost/locationprivacy/webapplication/firstpage.html";
+                    }
+                    else
+                            alert("login failure");
+        
+        
+                
+            });
+    });
+        
+    
+    
+    
+
+      </script>
+
+    
+    
+    
+  </head>
+
+  <body>
+
+    <div class="container">
+  <div class="login">
+  	<h1 class="login-heading">
+      <strong>Welcome.</strong> Please login.</h1>
+      
+        <input type="text" name="user" placeholder="Username" required="required" id="email" class="input-txt" />
+          <input type="password" name="password" placeholder="Password" required="required" id="password" class="input-txt" />
+          <div class="login-footer" align="center">
+             
+            <button type="submit" class="btn btn--right" id="login">Sign in  </button>
+    
+          </div>
+    
+  </div>
+</div>
+    
+        
+
+    
+    
+    
+  </body>
+</html>

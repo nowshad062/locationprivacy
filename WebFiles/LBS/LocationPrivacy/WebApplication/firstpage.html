@@ -1,0 +1,588 @@
+<html>
+<head>
+    <title>Admin Portal</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="jquery-latest.js"></script> 
+    <script type="text/javascript" src="jquery.tablesorter.js"></script>
+    <script src="sorttable.js"></script>
+    <style>
+         /* The Modal (background) */
+         .modal {
+         display: none; /* Hidden by default */
+         position: fixed; /* Stay in place */
+         z-index: 1; /* Sit on top */
+         padding-top: 100px; /* Location of the box */
+         left: 0;
+         top: 0;
+         width: 100%; /* Full width */
+         height: 100%; /* Full height */
+         overflow: auto; /* Enable scroll if needed */
+         background-color: rgb(0,0,0); /* Fallback color */
+         background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+         }
+         /* Modal Content */
+         .modal-content {
+         background-color: #fefefe;
+         margin: auto;
+         padding: 20px;
+         border: 1px solid #888;
+         width: 90%;
+         height: 90%;
+         overflow: auto; /* Enable scroll if needed */
+         }
+         /* The Close Button */
+         .close {
+         color: #aaaaaa;
+         float: right;
+         font-size: 28px;
+         font-weight: bold;
+         }
+         .close:hover,
+         .close:focus {
+         color: #000;
+         text-decoration: none;
+         cursor: pointer;
+         }
+         caption {
+         display: table-caption;
+         text-align: center;
+         font-size: 20px;
+         }
+         #map {
+         height: 100%;
+         }
+         #userid{
+         text-transform:capitalize;
+         }
+         table.sortable thead {
+         background-color:#eee;
+         color:#666666;
+         font-weight: bold;
+         cursor: default;
+         }
+    </style>
+    <script>
+         var map;
+         var user = "";
+         var date1 = "";
+         var date2 = "";
+         var time1 = "";
+         var time2 = "";
+         var color;
+         var listvalues = new Array();
+         var listvalues1 = new Array();
+         var jsonData = {};
+         var bounds ;
+         var latlng;
+         var set = new Set();
+         var tr;
+         var i, ij;
+         var list;
+         var newTableObject;
+         var modal = document.getElementById('myModal');
+         var span = document.getElementsByClassName("close")[0];
+         var ik = 0;
+         var viewData = { 
+             record2 : [] 
+             };
+        var temp;
+         //var o;
+         
+        $(document).ready(function(){
+            //$('#tableid').DataTable();
+            //  o=0;
+            modal = document.getElementById('myModal');
+            span = document.getElementsByClassName("close")[0];
+            newTableObject = document.getElementById("tableid");
+            list = document.getElementById("names");
+            document.getElementById("map").style.visibility = "hidden";
+            document.getElementById("heading").style.visibility = "hidden";
+            document.getElementById("names").style.visibility = "hidden";
+            document.getElementById("trace").style.visibility = "hidden";
+            var table = document.getElementById("tableid");
+            while(table.rows.length > 1) {
+                table.deleteRow(1);
+            }
+            getTimes(user, date1, date2, time1, time2);
+        /*var obj = $.getJSON("../search.php?username="+user+"&stime="+time1+"&etime="+time2+"&sdate="+date1+"&edate="+date2, function(data){
+        $.each(data, function(i, field){
+            if(i=="record"){
+                var tr;
+                //console.log(field);
+                //listvalues = listvalues.concat('[');
+                for (var ij = 0; ij < field.length; ij++) {
+                    tr = $('<tr/>');
+                    tr.append("<td id="+"userid"+ij+">" + field[ij].username + "</td>");
+                    tr.append("<td id="+"userlat"+ij+">" + field[ij].curlat + "</td>");
+                    tr.append("<td id="+"userlon"+ij+">" + field[ij].curlon + "</td>");
+                    tr.append("<td id="+"usertime"+ij+">" + field[ij].reqtime + "</td>");
+                    $('#tableid').append(tr);
+                }           
+            }
+             
+         
+        });           
+        });*/
+             
+        var obj1 = $.getJSON("../users.php", function(data){
+            $.each(data, function(i, field){
+                if(i=="record"){
+                    var option;
+                    //listvalues = listvalues.concat('[');
+                    for (var ij1 = 0; ij1 < field.length; ij1++) {
+         
+                        option = $('<option/>');
+                        option.append(field[ij1].username);
+                        $('#listid').append(option);
+                    }           
+                }
+            });               
+        });
+        
+        sorttable.makeSortable(newTableObject);
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+         
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+                getTimes(user, date1, date2, time1, time2);
+            }
+        }
+              
+        });
+         
+             
+        var count = 0;            
+        
+        function results(){
+        listvalues1 = new Array();
+        bounds = new google.maps.LatLngBounds();
+        latlng = new google.maps.LatLng();
+        document.getElementById("map").style.visibility = "hidden";
+        document.getElementById("names").style.visibility = "hidden";
+        document.getElementById("heading").style.visibility = "hidden";
+        document.getElementById("trace").style.visibility = "visible";
+        user = document.getElementById("username").value;
+        date1 = document.getElementById("date1").value;
+        date2 = document.getElementById("date2").value;
+        if(count==0){
+            var table = document.getElementById("tableid");
+            while(table.rows.length > 1) {
+                table.deleteRow(1);
+            }
+            var obj = $.getJSON("../search.php?username="+user+"&stime="+time1+"&etime="+time2+"&sdate="+date1+"&edate="+date2, function(data){
+            $.each(data, function(i, field){
+                if(i=="record"){
+                    //var preLoc, curLoc; 
+                    //var a = 1;    
+                    ////console.log(field);           
+                    for (ij = 0; ij < field.length; ij++) {
+                        timesSet.add(field[ij].reqtime);       
+                        set.add(field[ij].username);
+                        //}
+                        //prevLoc = new Date(field[ij].reqtime);
+                    }  
+                    //console.log("usertimes"+timesSet);
+                    //console.log("usernames"+set);         //
+                    count = count + 1;   
+                }
+            var myArr = Array.from(timesSet);
+            //console.log("times array"+myArr);
+            var lat, lng;
+            //if(ik == 0){
+                for (var i = 0; i < myArr.length; i++){
+                    var obj = $.getJSON("../search1.php?reqtime="+myArr[i], function(data){
+                    $.each(data, function(i, field){
+                        if(i=="record"){
+                            var tr;
+                            var ij = 0;
+                            //listvalues = listvalues.concat('[');
+                            //console.log(field);
+                            if(field.length > 1){
+                                var coor = new Array();
+                                for (ij = 0; ij < field.length; ij++) {
+                                    coor.push(new google.maps.LatLng(field[ij].curlat, field[ij].curlon));
+                                }
+                                for (var i = 0; i < coor.length; i++) {
+                                    bounds.extend(coor[i]);
+                                }
+                                latlng = bounds.getCenter();
+                                //console.log(latlng.lat()+" "+latlng.lng());
+                                lat = latlng.lat();
+                                lng = latlng.lng();
+                            }
+                            //lat = field[0].curlat;
+                            //lng = field[0].curlon;
+                            tr = $('<tr/>');
+                            tr.append("<td id="+"userid"+ij+">" + field[0].username + "</td>");
+                            tr.append("<td id="+"userlat"+ij+">" + lat + "</td>");
+                            tr.append("<td id="+"userlon"+ij+">" + lng + "</td>");
+                            tr.append("<td id="+"usertime"+ij+">" + field[0].reqtime + "</td>");
+                            $('#tableid').append(tr); 
+                            //listvalues1.push(new google.maps.LatLng(lat, lng));   
+                            //jsonData["username"] = field[0].username;
+                            jsonData["lat"] = lat;
+                            jsonData["lng"] = lng;
+                            //jsonData["reqtime"] = field[0].reqtime;
+                            viewData.record2.push(jsonData);       
+                        }
+                    });           
+                    });
+                    //console.log(myArr[i]);
+                    ik = ik +1;
+                }
+            //}
+            for(var v of set){
+                if(i==v)                    
+                listvalues = field;
+                //console.log(listvalues+" "+v);
+            }
+        });
+        });
+         
+        //initMap();
+        }
+        }
+
+
+
+        function tableResults(){
+            document.getElementById("map").style.visibility = "hidden";
+            document.getElementById("names").style.visibility = "hidden";
+            document.getElementById("heading").style.visibility = "hidden";
+            document.getElementById("trace").style.visibility = "visible";
+            user = document.getElementById("username").value;
+            date1 = document.getElementById("date1").value;
+            date2 = document.getElementById("date2").value;
+            if(count==0){
+                var table = document.getElementById("tableid");
+                while(table.rows.length > 1) {
+                    table.deleteRow(1);
+                }
+                getTimes(user, date1, date2, time1, time2);
+                //printTable();
+                //initMap();
+            }
+        }
+
+
+        function getTimes(user, date1, date2, time1, time2){
+            var timesSet = new Set();
+            listvalues1 = new Array();
+            var myArr = new Array();
+            var obj = $.getJSON("../search.php?username="+user+"&stime="+time1+"&etime="+time2+"&sdate="+date1+"&edate="+date2, function(data){
+                $.each(data, function(i, field){
+                    if(i=="record"){
+                        //var preLoc, curLoc; 
+                        //var a = 1;    
+                        ////console.log(field);           
+                        for (var ij1 = 0; ij1 < field.length; ij1++) {
+                            timesSet.add(field[ij1].reqtime);       
+                            set.add(field[ij1].username);
+                            //}
+                            //prevLoc = new Date(field[ij].reqtime);
+                        }
+                        myArr = Array.from(timesSet);
+                        //console.log("times array"+myArr);
+                        for (var i1 = 0; i1 < myArr.length; i1++){
+                            printTable(myArr[i1], user);
+                        }  
+                        //console.log("usertimes"+timesSet);
+                        //console.log("usernames"+set);         //
+                        //count = count + 1;   
+                    }
+                });
+            });
+            
+        }
+
+        function printTable(time, user){
+            
+            //if(ik == 0){
+                //for (var i1 = 0; i1 < timesArr.length; i1++){
+                    var obj1 = $.getJSON("../search1.php?reqtime="+time+"&user="+user, function(data){
+                        $.each(data, function(i, field){
+                            if(i=="record"){
+                                bounds = new google.maps.LatLngBounds();
+                                latlng = new google.maps.LatLng();
+                                var lat, lng;
+                                var tr;
+                                var ij3 = 0;
+                                //listvalues = listvalues.concat('[');
+                                //console.log(field);
+                                if(field.length > 1){
+                                    var coor = new Array();
+                                    for (var ij2 = 0; ij2 < field.length; ij2++) {
+                                        coor.push(new google.maps.LatLng(field[ij2].curlat, field[ij2].curlon));
+                                    }
+                                    coor.push(new google.maps.LatLng(field[0].curlat, field[0].curlon));
+                                    for (var i3 = 0; i3 < coor.length; i3++) {
+                                        bounds.extend(coor[i3]);
+                                    }
+                                    latlng = bounds.getCenter();
+                                    //console.log(latlng.lat()+" "+latlng.lng());
+                                    lat = latlng.lat();
+                                    lng = latlng.lng();
+                                    lat = lat.toFixed(4);
+                                    lng = lng.toFixed(4);
+                                }
+                                else{
+                                    lat = field[0].curlat;
+                                    lng = field[0].curlon;
+                                }
+                                //lat = field[0].curlat;
+                                //lng = field[0].curlon;
+                                tr = $('<tr/>');
+                                tr.append("<td id="+"userid"+ij3+">" + field[0].username + "</td>");
+                                tr.append("<td id="+"userlat"+ij3+">" + lat + "</td>");
+                                tr.append("<td id="+"userlon"+ij3+">" + lng + "</td>");
+                                tr.append("<td id="+"usertime"+ij3+">" + field[0].reqtime + "</td>");
+                                $('#tableid').append(tr); 
+                                //listvalues1.push(new google.maps.LatLng(lat, lng));   
+                                //jsonData["username"] = field[0].username;
+                                //jsonData["lat"] = lat;
+                                //jsonData["lng"] = lng;
+                                //jsonData["reqtime"] = field[0].reqtime;
+                                //viewData.record2.push(jsonData);       
+                            }
+                            ////console.log(myArr[i]);
+                        });           
+                    });
+                    
+                    //ik = ik +1;
+                //}
+            //}
+            /*for(var v of set){
+                if(i==v)                    
+                listvalues = field;
+                //console.log(listvalues+" "+v);
+                }*/
+        }
+         
+         
+        function initMap() {
+            var usersSet = new Set();
+            var z = 0;
+            if(temp == 2){
+                var container = document.getElementById("names");
+                var elements = container.getElementsByClassName("namespara");
+                while (elements[0]) {
+                    elements[0].parentNode.removeChild(elements[0]);
+                }
+            }
+            var o = 0;
+            document.getElementById("map").style.visibility = "hidden";
+            document.getElementById("names").style.visibility = "hidden";
+            document.getElementById("heading").style.visibility = "hidden";
+            //document.getElementById("trace").style.visibility = "hidden";
+            map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 5,
+                center: new google.maps.LatLng(0, 0),
+                mapTypeId: google.maps.MapTypeId.TERRAIN
+            });
+            var usersArray = new Array();
+            usersSet.clear();
+            $("#tableid tr").each(function(){
+                usersArray.push($(this).find("td:first").text());
+            });
+            console.log(usersArray);
+            for(var iUsers = 1; iUsers < usersArray.length; iUsers++){
+                usersSet.add(usersArray[iUsers]);
+            }
+            
+            for(var v of usersSet){
+                if(set.size > 1){
+                    console.log(v);
+                    var latArray = new Array();
+                    var lonArray = new Array();
+                    var timeArray = new Array();
+                    var flightPlanCoordinates = [];
+                    var cen;
+                    $("#tableid tr").each(function(){
+                    if($(this).find("td:first").text() == v){
+                    //usersArray.push($(this).find("td:first").text());
+                    latArray.push($(this).find("td:nth-child(2)").text());
+                    lonArray.push($(this).find("td:nth-child(3)").text());
+
+                    timeArray.push($(this).find("td:nth-child(4)").text());
+                    var pos = new google.maps.LatLng($(this).find("td:nth-child(2)").text(), $(this).find("td:nth-child(3)").text());
+                    flightPlanCoordinates.push(pos);//.concat("{lat: "+$(this).find("td:nth-child(2)").text()+", lng: "+$(this).find("td:nth-child(3)").text()+",");
+                    if(z == 0){
+                    cen = pos;}
+                    z = z+1;
+                    }
+                    });
+                    //var cen = flightPlanCoordinates.length;
+                    /*var latcenter = latArray[cen/2];
+                    var loncenter = lonArray[cen/2];*/
+                    console.log("center "+cen.lat() + " " + cen.lng());
+                    map.setCenter(cen);
+                        color = getRandomColor();
+                        if(o < usersSet.size)
+                        {
+                            var para = document.createElement("p");
+                            para.setAttribute("class","namespara");
+                            var node = document.createTextNode(v);
+                            para.appendChild(node);
+                            para.style.color = color;
+                            var element = document.getElementById("names");
+                            element.appendChild(para);
+                            o++;
+                            temp = 2;
+                        }
+                        /*//console.log(listvalues1);
+                        var json = listvalues1;
+                        for(var temp=0; temp<json.length; temp++){
+                            ////console.log(json[temp].reqtime);
+                        }            
+                        var flightPlanCoordinates = json;*/
+                        //console.log(flightPlanCoordinates); 
+                        var flightPath = new google.maps.Polyline({
+                            path: flightPlanCoordinates,
+                            geodesic: true,
+                            strokeColor: color,
+                            strokeOpacity: 1.0,
+                            strokeWeight: 2
+                        });
+                        flightPath.setMap(map);
+                        for(var k=0;k<latArray.length;k++){
+                            if(k == 0){
+                                marker = new google.maps.Marker({
+                                map: map,
+                                icon: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png',        
+                                title: "User="+v+" Position="+latArray[k]+","+lonArray[k]+" reqtime="+timeArray[k],
+                                position: new google.maps.LatLng(latArray[k], lonArray[k])
+                                
+                            }); 
+                            continue;
+                            }
+                            marker = new google.maps.Marker({
+                                map: map,
+                                icon: {
+                                    path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
+                                    scale: 4,  
+                                    strokeColor: color,
+                                    strokeOpacity: 1,
+                                    strokeWeight: 2
+                                },        
+                                title: "User="+v+" Position="+latArray[k]+","+lonArray[k]+" reqtime="+timeArray[k],
+                                position: new google.maps.LatLng(latArray[k], lonArray[k])
+                            });  
+                        }
+                }
+            }        
+        }
+         
+        function s(){
+            modal.style.display = "block";
+            document.getElementById("map").style.visibility = "visible";
+            google.maps.event.trigger(map, 'resize');
+            document.getElementById("names").style.visibility = "visible";
+            document.getElementById("heading").style.visibility = "visible";
+            document.getElementById("trace").style.visibility = "hidden";
+        }
+
+        function traceOnMap(){
+            initMap();
+        }
+         
+        function getRandomColor() {
+            var letters = '0123456789ABCDEF'.split('');
+            var color = '#';
+            for (var i = 0; i < 6; i++ ) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+         
+         
+    </script>
+</head>
+<body>
+    <div class="container special">
+        <div class="jumbotron">
+            <h1>Location Based Service</h1>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <label class="col-sm-2 control-label">Search</label>
+                <input class="form-control" id="username" type="text" autocomplete="off" placeholder="Search here" list="listid">
+                <datalist id="listid"></datalist>
+            </div>
+            <div class="col-md-4">
+                <div class="col-sm-8">
+                    <label class="col-sm-8 control-label">Date filter</label>
+               </div>
+               <div class='col-md-6'>
+                    <div class="form-group">
+                        <div class="date" id='datetimepicker6'>
+                            <input type='date' id="date1" class="form-control" placeholder="yyyy-mm-dd"/>
+                        </div>
+                    </div>
+                </div>
+                <div class='col-md-6'>
+                    <div class="form-group">
+                        <div class="date" id='datetimepicker7'>
+                            <input type="date" id="date2" class="form-control" placeholder="yyyy-mm-dd"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div align = "center" class="col-md-4">
+                <br>
+                <button onclick="tableResults()" type="button" class="btn btn-primary">Search</button>
+                <button onclick="traceOnMap(); s();" type="button" class="btn btn-primary" id="trace">Trace on map</button>    
+            </div>
+        </div>
+        <div>
+            <div style="
+            overflow-y: auto;
+            max-height:270px;">
+                <table class="sortable table table-bordered col-md-12" id="tableid">
+                    <thead>
+                        <th>Username</th>
+                        <th>Lattitude</th>
+                        <th>Longitude</th>
+                        <th>Request Time</th>
+                    </thead>
+                    <tr>
+                    </tr>
+                </table>
+            </div>
+            <div id="myModal" class="modal">
+                <!-- Modal content -->
+                <div class="modal-content">
+                    <span class="close">X</span>
+                    <div>
+                        <div class="side">
+                            <div  style="width:90%; float:left; border:2px "> 
+                            <div id="map">
+                            </div> </div>
+                            <div id="heading" style="margin-left:20px">
+                                <h5>Traced Users: </h5>
+                            </div>
+                            <div id="names" style="float:left; margin-left:20px">
+                            </div>
+                        </div> 
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // This example creates a 2-pixel-wide red polyline showing the path of William
+        // Kingsford Smith's first trans-Pacific flight between Oakland, CA, and
+        // Brisbane, Australia.
+    </script>
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCFLGY58ZN5ESpLddviG9o_9TMjkLbWiis&callback=initMap">
+    </script>
+</body>
+</html>

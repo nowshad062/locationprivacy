@@ -1,0 +1,823 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>  
+    <title>Location Privacy Third Party App Page</title>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="canvasjs.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <style>
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    height: 50%;
+    overflow: auto; /* Enable scroll if needed */
+}
+
+/* The Close Button */
+.close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+        caption {
+    display: table-caption;
+    text-align: center;
+    font-size: 20px;
+}
+</style>
+    <script type="text/javascript">      
+        
+            var user = "";
+            var date1 = "";
+            var date2 = "";
+            var time1 = "";
+            var time2 = "";
+            var opt = "Any";
+            var set = new Set();
+            var set1 = new Set();
+            var no = 0;
+            var partial = 0; 
+            var complete = 0;
+            var method4 = 0;
+            var singleUserValues = new Array();
+            var diffData = new Array();
+            var tr10;
+            var ij3 = 0;
+            var modal = document.getElementById('myModal');
+            var span = document.getElementsByClassName("close")[0];
+            var xypoints;
+            var viewData = { 
+                points : [] 
+            };
+            var count=0;
+            $(document).ready(function(){
+                document.getElementById("show").style.visibility = "hidden";
+                modal = document.getElementById('myModal');
+                span = document.getElementsByClassName("close")[0];
+                var table = document.getElementById("tableid");
+                var table1 = document.getElementById("tableid1");
+                while(table.rows.length > 1) {
+                    table.deleteRow(1);
+                }
+                
+                printTable1(user, date1, date2, opt);
+
+                for(var v of set){
+                    option = $('<option/>');
+                    option.append(v);
+                    $('#listid').append(option);
+                }
+                
+                span.onclick = function() {
+                    modal.style.display = "none";
+                }
+
+                // When the user clicks anywhere outside of the modal, close it
+                window.onclick = function(event) {
+                    if (event.target == modal) {
+                        modal.style.display = "none";
+                    }
+                }
+            });
+        
+        
+        
+        
+        
+        function load(clicked_id,clicked)
+        {
+            var table = document.getElementById("tableid2");
+            var un = document.getElementById('userid'+clicked_id).innerHTML;
+            var rq = document.getElementById('usertime'+clicked_id).innerHTML;
+            while(table.rows.length > 1) {
+                table.deleteRow(1);
+            }
+            var obj = $.getJSON("differenceChart.php?username="+un+"&stime="+time1+"&etime="+time2+"&sdate="+date1+"&edate="+date2+"&option="+opt+"&reqtime="+rq, function(data){
+            $.each(data, function(i, field){
+                if(i=="record"){
+                    var tr1;
+        for (var ij1 = 0; ij1 < field.length; ij1++) {
+        tr1 = $('<tr/>');
+        tr1.append("<td>" + field[ij1].username + "</td>");
+        tr1.append("<td>" + field[ij1].reqtime + "</td>");
+        //tr1.append("<td>" + field[ij1].opt + "</td>");
+        tr1.append("<td>" + field[ij1].reallat + "</td>");
+        tr1.append("<td>" + field[ij1].reallon + "</td>");
+        tr1.append("<td>" + field[ij1].slat + "</td>");
+        tr1.append("<td>" + field[ij1].slon + "</td>");
+        tr1.append("<td>" + field[ij1].reallandmarklat + "</td>");
+        tr1.append("<td>" + field[ij1].reallandmarklon + "</td>");
+        tr1.append("<td>" + field[ij1].reslandmarklat + "</td>");
+        tr1.append("<td>" + field[ij1].reslandmarklon + "</td>");
+        tr1.append("<td>" + field[ij1].restime + "</td>");
+        $('#tableid2').append(tr1);
+                    }           
+                }
+                
+            });
+        });
+            modal.style.display = "block";
+        }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        function results(){
+            var len = 0;
+            var modal = document.getElementById('myModal');
+            var span = document.getElementsByClassName("close")[0];
+            user = document.getElementById("username").value;
+            date1 = document.getElementById("date1").value;
+            date2 = document.getElementById("date2").value;
+            opt = document.getElementById("option").value;
+            if(opt == "Shift Based")
+                opt = "partial"
+            if(opt == "Area Based")
+                opt = "complete"
+            if(opt == "K - Anonymity")
+                opt = "method4"    
+
+            var table = document.getElementById("tableid");
+            while(table.rows.length > 1) {
+                table.deleteRow(1);               
+            }
+
+            var table1 = document.getElementById("tableid1");
+            while(table1.rows.length > 1) {
+                table1.deleteRow(1);
+            }
+
+            var table2 = document.getElementById("tableid3");
+            while(table2.rows.length > 1) {
+                table2.deleteRow(1);  
+            }
+
+            console.log(opt);
+
+            if(opt == "partial" || opt == "complete" || opt == "method4" || opt == "No"){
+                printTable1(user, date1, date2, opt);
+            }
+
+            if(user != "" && opt == "Any"){
+                document.getElementById("tableid3").style.visibility = "hidden";
+                document.getElementById("tableid1").style.visibility = "hidden";
+                printTable1(user, date1, date2, opt);
+                var obj1 = $.getJSON("singleUserChart.php?username="+user, function(data){
+                    $.each(data, function(i, field){
+                        if(i=="record"){
+                            singleUserValues = field;
+                        }
+                    });
+                });
+            }
+
+            if(user != "" && opt == "Any"){
+                document.getElementById("tableid3").style.visibility = "hidden";
+                document.getElementById("tableid1").style.visibility = "hidden";
+                singlechart();
+            }
+
+            if(user == "" && opt == "Any"){
+                document.getElementById("tableid3").style.visibility = "hidden";
+                document.getElementById("tableid1").style.visibility = "hidden";
+                printTable1(user, date1, date2, opt);
+                if(count==0){
+                    for(var v1 of set1){
+                        if(v1.match(/,complete,/gi))
+                            complete = complete+1;
+                        if(v1.match(/,partial,/gi))
+                            partial = partial+1;
+                        if(v1.match(/,no,/gi))
+                            no = no+1;
+                        if(v1.match(/,method4,/gi))
+                            method4 = method4+1;
+                    }
+                }
+                count++;
+                chart();
+            }
+
+            if(opt == "partial"){
+                printTable3(user, date1, date2, opt);
+                document.getElementById("tableid3").style.visibility = "hidden";
+                document.getElementById("tableid3").style.display="none"
+                document.getElementById("tableid1").style.visibility = "visible";
+                document.getElementById("tableid1").style.display="table"
+                distanceChart();
+            }
+
+            if(opt == "complete"){
+                printTable3(user, date1, date2, opt);
+                document.getElementById("tableid3").style.visibility = "hidden";
+                document.getElementById("tableid3").style.display="none"
+                document.getElementById("tableid1").style.visibility = "visible";
+                document.getElementById("tableid1").style.display="table"
+            }
+
+            if(opt == "method4"){
+                getTimes(user, date1, date2, opt);
+                document.getElementById("tableid1").style.visibility = "hidden";
+                document.getElementById("tableid1").style.display="none"
+                document.getElementById("tableid3").style.visibility = "visible";
+                document.getElementById("tableid3").style.display="table"
+                printChart();
+            }
+
+            span.onclick = function() {
+                modal.style.display = "none";
+            }
+
+            // When the user clicks anywhere outside of the modal, close it
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            }
+
+            document.getElementById("show").style.visibility = "visible";
+        }
+        
+        
+        
+        function singlechart(){
+            chart1 = new CanvasJS.Chart("chartContainer",
+    {
+                animationEnabled: true,
+      title:{
+        text: "User's change of Location Privacy Preferences Overtime"
+    },
+    axisX:{
+        title: "Timeline",
+        gridThickness: 2,
+        labelFormatter: function (e) {
+				return CanvasJS.formatDate( e.value, "DD MMM YYYY");
+            },
+        labelAngle: -20
+    },
+    axisY: {
+        title: "Options",
+        minimum: -1
+    },
+    width:1150,
+    data: [
+    {        
+        type: "line",
+        xValueType: "dateTime",
+        dataPoints: singleUserValues
+        //{x:new Date(2016,06,29,10,05,20),y:1},{x:new Date(2016,06,30,10,01,04),y:2},{x:new Date(2016,06,30,15,16,03),y:0}
+
+        
+    }
+    ]
+});
+            chart1.render();
+        }
+        
+        
+        
+        function distanceChart(){
+            chart2 = new CanvasJS.Chart("chartContainer1",
+    {
+                animationEnabled: true,
+      title:{
+        text: "Tradeoff (Only for Shift Based Anonymization)"
+    },
+    axisX:{
+        title: "Distance Difference between User's Location and Shifted Location. (Privacy)",
+        gridThickness: 2
+    },
+    axisY: {
+        title: "Distance Difference between the Requested Landmark and Responded Landmark. (Cost)"
+    },
+    width:1150,
+    data: [
+    {        
+        type: "scatter",
+        dataPoints: diffData
+        //{x:new Date(2016,06,29,10,05,20),y:1},{x:new Date(2016,06,30,10,01,04),y:2},{x:new Date(2016,06,30,15,16,03),y:0}
+
+        
+    }
+    ]
+});
+            chart2.render();
+        }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        function chart() {     
+        var listvalues = new Array();
+		var chart = new CanvasJS.Chart("chartContainer",
+		{
+			theme: "theme3",
+                        animationEnabled: true,
+			title:{
+				text: "The Distribution of Users' on Anonymization Preferences",
+				fontSize: 30
+			},
+			toolTip: {
+				shared: true
+			},
+            axisX: {
+                title: "Anonymization option",
+                fontSize: 30,
+                labelFontSize: 20
+            },
+			axisY: {
+				title: "Number of users"
+			},			
+            width:1150,
+			data: [ 
+			
+			{
+				type: "column",	
+				name: "Number of users",
+				dataPoints:[
+                    { label:"No", y: no },
+                    { label:"Shift Based", y: partial },
+                    { label:"Area Based", y: complete },
+                    { label:"Method4", y: method4 }
+                ]
+			}
+			
+			],
+          legend:{
+            cursor:"pointer",
+            itemclick: function(e){
+              if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+              	e.dataSeries.visible = false;
+              }
+              else {
+                e.dataSeries.visible = true;
+              }
+            	chart.render();
+            }
+          },
+        });    
+	  chart.render();
+}
+        
+
+
+        function initMap() {
+            
+            map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 2,
+                center: new google.maps.LatLng(0, 0),
+                mapTypeId: google.maps.MapTypeId.TERRAIN
+            });
+        }
+
+
+        function getTimes(user, date1, date2, time1, time2){
+            var timeArray = new Array();
+            var userArray = new Array();
+            var reallatArray = new Array();
+            var reallonArray = new Array();
+            var fakelocArray = new Array();
+            var obj = $.getJSON("method4Search.php?username="+user+"&stime="+time1+"&etime="+time2+"&sdate="+date1+"&edate="+date2, function(data){
+                $.each(data, function(i, field){
+                    if(i=="record"){        
+                        for (var ij1 = 0; ij1 < field.length; ij1++) {
+                            userArray.push(field[ij1].user);
+                            timeArray.push(field[ij1].time);
+                            reallatArray.push(field[ij1].reallat);
+                            reallonArray.push(field[ij1].reallon);
+                            fakelocArray.push(field[ij1].fakelocationscount);
+                        }
+                        for (var i1 = 0; i1 < userArray.length; i1++){
+                            printTable(userArray[i1], timeArray[i1],reallatArray[i1],reallonArray[i1],fakelocArray[i1]);
+                        }   
+                    }
+                });
+            });
+        }
+
+        function printTable(user, time, reallatpoint, reallonpoint, fakecount){
+            var fakenum = parseInt(fakecount);
+            //if(ik == 0){
+                //for (var i1 = 0; i1 < timesArr.length; i1++){
+                    var distance;
+                    var obj1 = $.getJSON("search1.php?reqtime="+time+"&user="+user, function(data){
+                        $.each(data, function(i, field){
+                            if(i=="record"){
+                                bounds = new google.maps.LatLngBounds();
+                                latlng = new google.maps.LatLng();
+                                var lat, lng;
+                                
+                                var tr10;
+                                //listvalues = listvalues.concat('[');
+                                //console.log(field);
+                                if(field.length > 1){
+                                    var coor = new Array();
+                                    for (var ij2 = 0; ij2 < field.length; ij2++) {
+                                        coor.push(new google.maps.LatLng(field[ij2].fakelat, field[ij2].fakelon));
+                                    }
+                                    coor.push(new google.maps.LatLng(field[0].fakelat, field[0].fakelon));
+                                    for (var i3 = 0; i3 < coor.length; i3++) {
+                                        bounds.extend(coor[i3]);
+                                    }
+                                    latlng = bounds.getCenter();
+                                    //console.log(latlng.lat()+" "+latlng.lng());
+                                    lat = latlng.lat();
+                                    lng = latlng.lng();
+                                    lat = lat.toFixed(4);
+                                    lng = lng.toFixed(4);
+                                }
+                                else{
+                                    lat = reallatpoint;
+                                    lng = reallonpoint;
+                                }
+                                //lat = field[0].curlat;
+                                //lng = field[0].curlon;
+                                var a = new google.maps.LatLng(reallatpoint, reallonpoint);
+                                var b = new google.maps.LatLng(lat, lng);
+                                distance = google.maps.geometry.spherical.computeDistanceBetween(a,b);
+                                console.log(user+" "+time+" "+reallatpoint+" "+reallonpoint+" "+fakecount);
+                                tr10 = $('<tr/>');
+                                tr10.append("<td>" + user + "</td>");
+                                tr10.append("<td>" + time + "</td>");
+                                tr10.append("<td>" + reallatpoint + "</td>");
+                                tr10.append("<td>" + reallonpoint + "</td>");
+                                tr10.append("<td>" + lat + "</td>");
+                                tr10.append("<td>" + lng + "</td>");
+                                tr10.append("<td>" + fakenum + "</td>");
+                                tr10.append("<td>" + (distance/1609.34).toFixed(4) + "</td>");
+                                $('#tableid3').append(tr10); 
+                                ij3 = ij3+1;
+                                var json = {};
+                                json["x"] = distance/1609.34;
+                                json["y"] = fakenum;
+                                viewData.points.push(json);       
+                            }
+                        });           
+                    });
+        }
+
+
+        function printChart(){
+            chart3 = new CanvasJS.Chart("chartContainer2",
+    {
+                animationEnabled: true,
+      title:{
+        text: "Analysis for K - anonymization method"
+    },
+    axisX:{
+        title: "Distance Difference between User's Location and Calculated Center Point. (Privacy)",
+        gridThickness: 2
+    },
+    axisY: {
+        title: "Fake Locations Count"
+    },
+    width:1150,
+    data: [
+    {        
+        type: "scatter",
+        dataPoints: viewData["points"]
+        //{x:new Date(2016,06,29,10,05,20),y:1},{x:new Date(2016,06,30,10,01,04),y:2},{x:new Date(2016,06,30,15,16,03),y:0}
+
+        
+    }
+    ]
+});
+            chart3.render();
+        }
+
+        function printTable1(user, date1, date2, opt){
+            if(opt=="Any")
+                opt="";
+            var obj = $.getJSON("search.php?username="+user+"&stime="+time1+"&etime="+time2+"&sdate="+date1+"&edate="+date2+"&option="+opt, function(data){
+                $.each(data, function(i, field){
+                    if(i=="record"){
+                        for (ij = 0; ij < field.length; ij++) {
+                            if(field[ij].opt == "partial")
+                                field[ij].opt = "Shift Based"
+                            if(field[ij].opt == "complete")
+                                field[ij].opt = "Area Based"
+                            if(field[ij].opt == "method4")
+                                field[ij].opt = "K - Anonymity"
+                            tr = $('<tr id='+ij+' onclick=load(this.id,this)>');    
+                            tr.append("<td id="+"userid"+ij+">" + field[ij].username + "</td>");
+                            tr.append("<td id="+"useropt"+ij+">" + field[ij].opt + "</td>");
+                            tr.append("<td id="+"userlat"+ij+">" + field[ij].curlat + "</td>");
+                            tr.append("<td id="+"userlon"+ij+">" + field[ij].curlon + "</td>");
+                            tr.append("<td id="+"usertime"+ij+">" + field[ij].reqtime + "</td>");
+                            $('#tableid').append(tr);
+                            set.add(field[ij].username);
+                            if(field[ij].opt == "Shift Based")
+                                field[ij].opt = "partial"
+                            if(field[ij].opt == "Area Based")
+                                field[ij].opt = "complete"
+                            if(field[ij].opt == "K - Anonymity")
+                                field[ij].opt = "method4"
+                            set1.add(field[ij].username+","+field[ij].opt+",");
+                        }         
+                    }
+                });
+            });
+        }
+
+
+        function printTable3(user, date1, date2, opt){
+            var obj = $.getJSON("differenceChart.php?username="+user+"&stime="+time1+"&etime="+time2+"&sdate="+date1+"&edate="+date2+"&option="+opt+"&reqtime="+"", function(data){
+                $.each(data, function(i, field){
+                    if(i=="record"){
+                        var tr1;
+                        for (var ij1 = 0; ij1 < field.length; ij1++) {
+                            tr1 = $('<tr/>');
+                            tr1.append("<td>" + field[ij1].username + "</td>");
+                            tr1.append("<td>" + field[ij1].reqtime + "</td>");
+                            //tr1.append("<td>" + field[ij1].opt + "</td>");
+                            tr1.append("<td>" + field[ij1].reallat + "</td>");
+                            tr1.append("<td>" + field[ij1].reallon + "</td>");
+                            tr1.append("<td>" + field[ij1].slat + "</td>");
+                            tr1.append("<td>" + field[ij1].slon + "</td>");
+                            tr1.append("<td>" + parseFloat(field[ij1].diff1).toFixed(2) + "</td>");
+                            tr1.append("<td>" + field[ij1].reallandmarklat + "</td>");
+                            tr1.append("<td>" + field[ij1].reallandmarklon + "</td>");
+                            tr1.append("<td>" + field[ij1].reslandmarklat + "</td>");
+                            tr1.append("<td>" + field[ij1].reslandmarklon + "</td>");
+                            tr1.append("<td>" + parseFloat(field[ij1].diff2).toFixed(2) + "</td>");
+                            tr1.append("<td>" + field[ij1].restime + "</td>");
+                            $('#tableid1').append(tr1);
+                        }           
+                    }
+                    if(i=="data")
+                    {
+                        diffData = field;
+                    }
+                    //console.log(diffData);
+                });
+            });
+        }
+
+        function hideCharts(){
+            document.getElementById("chart").style.visibility = "hidden";
+            document.getElementById("chart").style.display="none"
+            document.getElementById("chart1").style.visibility = "hidden";
+            document.getElementById("chart1").style.display="none"
+            document.getElementById("chart2").style.visibility = "hidden";
+            document.getElementById("chart2").style.display="none"
+        }
+
+        function showCharts(){
+            document.getElementById("show").style.visibility = "hidden";
+            if(user != "" && opt == "Any"){
+                document.getElementById("chart").style.visibility = "visible";
+                document.getElementById("chart").style.display="table"
+            }
+
+            if(user == "" && opt == "Any"){
+                document.getElementById("chart").style.visibility = "visible";
+                document.getElementById("chart").style.display="table"
+                document.getElementById("para").style.visibility = "hidden";
+                document.getElementById("para").style.display="none"
+            }
+
+            if(opt == "partial"){
+                document.getElementById("chart1").style.visibility = "visible";
+                document.getElementById("chart1").style.display="table"
+            }
+
+            if(opt == "method4"){
+                document.getElementById("chart2").style.visibility = "visible";
+                document.getElementById("chart2").style.display="table"
+            }
+        }
+        
+        
+        
+</script>
+    
+  </head>
+<body>
+    <div class="container" style="height: 490px;
+                overflow-y: auto;
+                max-height:700px;">
+       <div class="jumbotron">
+    <h1>Welcome to Analytic Server</h1>
+    </div>
+    <div class="row">
+    <div class="col-md-2">
+        <label class="col-sm-12 control-label">Search by user</label>
+        <input class="form-control" id="username" type="text" autocomplete="off" placeholder="Search here" list="listid">
+        <datalist id="listid">
+        
+        </datalist>
+        </div>
+        <div class="col-md-2">
+        <label class="col-sm-12 control-label">Search by option</label>
+        <input class="form-control" id="option" type="text" autocomplete="off" placeholder="Search here" list="listid1" value="Any">
+        <datalist id="listid1">
+        <option value="No"></option>
+        <option value="Shift Based"></option>
+        <option value="Area Based"></option>
+        <option value="K - Anonymity"></option>
+        <option value="Any"></option>
+         </datalist>
+        </div>
+        <div class="col-md-5">
+            
+        <label class="col-sm-12 control-label">Date filter</label>
+                
+            <div class='col-md-6'>
+        <div class="form-group">
+            <div class='date' id='datetimepicker6'>
+                <input type='date' id="date1" class="form-control" placeholder="yyyy-mm-dd"/>
+                </div>
+        </div>
+    </div>
+    <div class='col-md-6'>
+        <div class="form-group">
+            <div class=' date' id='datetimepicker7'>
+                <input type="date" id="date2" class="form-control" placeholder="yyyy-mm-dd"/>
+                </div>
+        </div>
+    </div>
+            </div>
+        
+        
+        
+    
+        
+        <div class="col-md-3">
+            <br>
+        <button onclick="hideCharts(); results() " type="button" class="btn btn-primary">Search</button>
+        <button onclick="results(); showCharts();" type="button" class="btn btn-primary" id="show">Show on chart</button>    
+        </div>
+    </div>
+    <br>
+    
+    <div>    
+    <table class="table table-bordered col-md-12 " id="tableid">
+    <thead>
+      
+        <th>Username</th>
+        <th>option</th>
+        <th>Lattitude</th>
+        <th>Longitude</th>
+        <th>Request Time</th>
+      
+    </thead>
+        <tr>
+        </tr>
+      
+  </table></div>
+<div id="myModal" class="modal">
+
+  <!-- Modal content -->
+  <div class="modal-content">
+    <span class="close">X</span>
+    <table class="table table-bordered col-md-12 " id="tableid2">
+    <thead>
+      
+        <th>Username</th>
+        <th>Requested Time</th>
+        <th>Real Lattitude</th>
+        <th>Real Longitude</th>
+        <th>Shifted Lattitude</th>
+        <th>Shifted Longitude</th>
+        <th>Real Landmark Lattitude</th>
+        <th>Real Landmark Longitude</th>
+        <th>Responded Landmark Lattitude</th>
+        <th>Responded Landmark Longitude</th>
+        <th>Response Time</th>
+      
+    </thead>
+        <tr>
+        </tr>
+      
+  </table>
+  </div>
+
+</div>
+    </div>  
+    <br>
+    <div class="container" id="chart"  style = "visibility : hidden; display:none">
+        <div id="chartContainer" style="width: 100%; height: 300px;">
+    </div>
+        <p id = "para">Note: 0 refers to No anonymization, 1 refers to Shift based anonymization, 2 refers to Area Based anonymization, 3 refers to Method4</p>
+    
+    </div>
+    <br>
+    <div class="container" style="height: 490px;
+                overflow-y: auto;
+                max-height:700px;" id = "table2">
+    <table class="table table-bordered col-md-12 " id="tableid1" style = "visibility : hidden; display:none">
+        <caption>Tradeoff between Preserving Location Privacy and its Cost</caption>
+    <thead>
+      
+        <th>Username</th>
+        <th>Requested Time</th>
+        <th>Real Lattitude</th>
+        <th>Real Longitude</th>
+        <th>Shifted Lattitude</th>
+        <th>Shifted Longitude</th>
+        <th>Difference1 in miles (Privacy)</th>
+        <th>Real Landmark Lattitude</th>
+        <th>Real Landmark Longitude</th>
+        <th>Responded Landmark Lattitude</th>
+        <th>Responded Landmark Longitude</th>
+        <th>Difference2 in miles (Cost)</th>
+        <th>Response Time</th>
+      
+    </thead>
+        <tr>
+        </tr>
+      
+  </table>
+    <table class="table table-bordered col-md-12 " id="tableid3"  style = "visibility : hidden; display:none">
+        <caption>Analysis for K - anonymization method</caption>
+    <thead>
+      
+        <th>Username</th>
+        <th>Requested Time</th>
+        <th>Real Lattitude</th>
+        <th>Real Longitude</th>
+        <th>Center Lattitude</th>
+        <th>Center Longitude</th>
+        <th>Fakelocations count</th>
+        <th>Distance between center and real locations</th>
+      
+    </thead>
+        <tr>
+        </tr>
+      
+  </table>
+    </div>
+    <div class="container" id="chart1" style = "visibility : hidden; display:none">
+        <div id="chartContainer1" style="width: 100%; height: 300px;;">
+    </div>
+    
+    </div>
+    <div class="container" id="chart2" style="visibility: hidden; display: none">
+        <div id="chartContainer2" style="width: 100%; height: 300px;">
+    </div>
+    
+    </div>
+<div id="map" style="display:none">
+</body>
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?v=3&sensor=false&libraries=geometry&key=AIzaSyCFLGY58ZN5ESpLddviG9o_9TMjkLbWiis&callback=initMap">
+    </script>
+</html>

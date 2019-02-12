@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        is-multidex="true"
+        jar="/Users/vikramchava/Desktop/LocationPrivacy/app/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="57e5e9b192dab8c19e7660f39ad3515722c28d8f">
+        <dex dex="/Users/vikramchava/Desktop/LocationPrivacy/app/build/intermediates/transforms/dex/debug/folders/1000/10000/instant-run-bootstrap_98f824701e4bead8c4621bb639601308b75e63ee/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/vikramchava/Desktop/LocationPrivacy/app/libs/apache-mime4j-0.6.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="945007627e8d12275d755081a9e609c018e1210d">
+        <dex dex="/Users/vikramchava/Desktop/LocationPrivacy/app/build/intermediates/transforms/dex/debug/folders/1000/2/apache-mime4j-0.6_fdef02081288563aa6e609a018199f968676871f/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/vikramchava/.gradle/caches/modules-2/files-2.1/com.android.support.constraint/constraint-layout-solver/1.1.3/bde0667d7414c16ed62d3cfe993cff7f9d732373/constraint-layout-solver-1.1.3.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="bde0667d7414c16ed62d3cfe993cff7f9d732373">
+        <dex dex="/Users/vikramchava/Desktop/LocationPrivacy/app/build/intermediates/transforms/dex/debug/folders/1000/10/constraint-layout-solver-1.1.3_f50a040339df5f3d8b93a3eb1cbb1004dfb71c6c/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/vikramchava/.android/build-cache/3eacfbbfdd42864861d63c1364878b8faac276df/output/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="b15c6ded887ad967e20bb335c1a121b253c04dce">
+        <dex dex="/Users/vikramchava/Desktop/LocationPrivacy/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_abf681b64202ebd226d842079ee34baabdb7853e/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/vikramchava/Desktop/LocationPrivacy/app/build/intermediates/incremental-runtime-classes/debug/instant-run.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="3be78ebc2706b2e1fe2f12d5726887a92d6c183b">
+        <dex dex="/Users/vikramchava/Desktop/LocationPrivacy/app/build/intermediates/transforms/dex/debug/folders/1000/10000/instant-run_fedc237f4278e456372b293c3aeef85ebbf66ae7/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/vikramchava/Desktop/LocationPrivacy/app/libs/httpmime-4.1.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="f6b9ce4485869cc314171c554a436e6121783fbe">
+        <dex dex="/Users/vikramchava/Desktop/LocationPrivacy/app/build/intermediates/transforms/dex/debug/folders/1000/2/httpmime-4.1_a090be88ec47a4dd7ed536a9de8e3ee95fcb261b/classes.dex" />
+    </item>
+
+</items>

@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">Location Privacy</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Password</string>
+    <string name="hint_name">Username</string>
+    <string name="btn_login">LOGIN</string>
+    <string name="btn_register">REGISTER</string>
+    <string name="btn_link_to_register">Not a member? Sign up now.</string>
+    <string name="btn_link_to_login">Already registred! Login Me.</string>
+    <string name="welcome">Welcome</string>
+    <string name="btn_logout">LOGOUT</string>
+    <string name="name">Fullname</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_register">Register</string>
+    <string name="validation_not_empty">Field cannot be empty</string>
+    <string name="validation_max_number">Field length cannot be greater than 20</string>
+    <string name="validation_max_number1">Radius cannot be greater than 30 miles</string>
+    <string name="base_url">http://192.168.43.215/LocationPrivacy/</string>
+    <string name="base_url1">http://192.168.43.215/LocationPrivacyThirdParty/</string>
+    <string name="title_activity_search">SearchActivity</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="currentLatitude">0.0000</string>
+    <string name="currentLongitude">0.0000</string>
+</resources>
